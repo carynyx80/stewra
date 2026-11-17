@@ -1,0 +1,529 @@
+// Stewra data model. Token amounts are stored as base-unit decimal strings
+// (uint256-safe) and handled with BigInt in code.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum AgentStatus {
+  IDLE
+  RUNNING
+  PAUSED
+}
+
+enum TaskStatus {
+  DRAFT
+  PENDING_APPROVAL
+  QUEUED
+  RUNNING
+  WAITING_ON_DEPENDENCY
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum JobStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FAILED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+  EXPIRED
+}
+
+enum QuoteStatus {
+  OPEN
+  ORDERED
+  EXPIRED
+}
+
+enum OrderStatus {
+  AWAITING_FUNDING
+  FUNDED
+  IN_PROGRESS
+  DELIVERED
+  ACCEPTED
+  DISPUTED
+  REFUNDED
+  CANCELLED
+}
+
+model User {
+  id          String               @id @default(cuid())
+  address     String               @unique
+  displayName String?
+  createdAt   DateTime             @default(now())
+  memberships OrganizationMember[]
+  ownedOrgs   Organization[]       @relation("OrgOwner")
+}
+
+model AuthNonce {
+  nonce     String    @id
+  address   String
+  message   String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([address])
+}
+
+model Organization {
+  id              String               @id @default(cuid())
+  slug            String               @unique
+  name            String
+  industry        String
+  description     String
+  template        String
+  logoUrl         String?
+  objectives      String               @default("")
+  published       Boolean              @default(true)
+  treasuryAddress String?
+  ownerId         String
+  owner           User                 @relation("OrgOwner", fields: [ownerId], references: [id])
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  members         OrganizationMember[]
+  policy          OrganizationPolicy?
+  agents          Agent[]
+  projects        Project[]
+  tasks           Task[]
+  approvals       Approval[]
+  listings        ServiceListing[]
+  knowledge       KnowledgeDocument[]
+  activity        ActivityEvent[]
+  salesOrders     ServiceOrder[]       @relation("SellerOrders")
+  purchaseOrders  ServiceOrder[]       @relation("BuyerOrders")
+  treasuryTxs     TreasuryTransaction[]
+  apiKeys         ApiKey[]
+  webhooks        WebhookSubscription[]
+}
+
+model OrganizationMember {
+  id        String       @id @default(cuid())
+  orgId     String
+  userId    String
+  role      MemberRole
+  createdAt DateTime     @default(now())
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+}
+
+model OrganizationPolicy {
+  orgId                 String       @id
+  org                   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  // purchases at or above this amount (base units) require explicit owner approval
+  approvalThreshold     String       @default("0")
+  // rolling 24h cap across all org purchases; defeats split-purchase evasion
+  dailySpendCap         String       @default("0")
+  maxAgentRunCostMicros Int          @default(2000000)
+  requireHiringApproval Boolean      @default(true)
+  delegatedSpendPaused  Boolean      @default(false)
+  updatedAt             DateTime     @updatedAt
+}
+
+model Agent {
+  id              String           @id @default(cuid())
+  orgId           String
+  org             Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name            String
+  role            String
+  department      String           @default("Operations")
+  description     String
+  provider        String           @default("anthropic")
+  model           String           @default("claude-opus-5-5")
+  effort          String           @default("medium")
+  systemPrompt    String
+  tools           String[]
+  isOrchestrator  Boolean          @default(false)
+  spendLimit      String           @default("0")
+  status          AgentStatus      @default(IDLE)
+  isPublic        Boolean          @default(true)
+  tasksCompleted  Int              @default(0)
+  tasksFailed     Int              @default(0)
+  costMicros      Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  tasks           Task[]
+  executions      AgentExecution[]
+  memories        AgentMemory[]
+  listings        ServiceListing[]
+
+  @@index([orgId])
+}
+
+model AgentMemory {
+  id        String   @id @default(cuid())
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([agentId])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  orgId       String
+  org         Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  title       String
+  objective   String
+  status      ProjectStatus @default(PLANNING)
+  createdById String?
+  orderId     String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  tasks       Task[]
+
+  @@index([orgId])
+}
+
+model Task {
+  id           String           @id @default(cuid())
+  orgId        String
+  org          Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  projectId    String?
+  project      Project?         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  agentId      String?
+  agent        Agent?           @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  parentTaskId String?
+  parent       Task?            @relation("Subtasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
+  subtasks     Task[]           @relation("Subtasks")
+  title        String
+  instructions String
+  status       TaskStatus       @default(QUEUED)
+  output       String?
+  error        String?
+  attempts     Int              @default(0)
+  maxAttempts  Int              @default(3)
+  timeoutMs    Int              @default(600000)
+  costMicros   Int              @default(0)
+  inputTokens  Int              @default(0)
+  outputTokens Int              @default(0)
+  isMock       Boolean          @default(false)
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  dependsOn    TaskDependency[] @relation("TaskDeps")
+  dependents   TaskDependency[] @relation("TaskDependents")
+  executions   AgentExecution[]
+  messages     AgentMessage[]
+  deliverables Deliverable[]
+
+  @@index([orgId, status])
+  @@index([projectId])
+}
+
+model TaskDependency {
+  taskId      String
+  dependsOnId String
+  task        Task   @relation("TaskDeps", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOn   Task   @relation("TaskDependents", fields: [dependsOnId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, dependsOnId])
+}
+
+model Job {
+  id        String    @id @default(cuid())
+  type      String
+  payload   Json
+  status    JobStatus @default(QUEUED)
+  runAt     DateTime  @default(now())
+  attempts  Int       @default(0)
+  lockedAt  DateTime?
+  lockedBy  String?
+  lastError String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status, runAt])
+}
+
+model AgentExecution {
+  id           String    @id @default(cuid())
+  taskId       String
+  task         Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  agentId      String
+  agent        Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  model        String
+  status       String
+  inputTokens  Int       @default(0)
+  outputTokens Int       @default(0)
+  costMicros   Int       @default(0)
+  turns        Int       @default(0)
+  error        String?
+  startedAt    DateTime  @default(now())
+  finishedAt   DateTime?
+
+  @@index([agentId])
+}
+
+model AgentMessage {
+  id          String   @id @default(cuid())
+  orgId       String
+  taskId      String?
+  task        Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fromAgentId String?
+  toAgentId   String?
+  kind        String
+  content     String
+  createdAt   DateTime @default(now())
+
+  @@index([orgId, createdAt])
+  @@index([taskId])
+}
+
+model Deliverable {
+  id          String        @id @default(cuid())
+  orgId       String
+  taskId      String?
+  task        Task?         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  orderId     String?
+  order       ServiceOrder? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  title       String
+  content     String
+  contentType String        @default("text/markdown")
+  contentHash String
+  isMock      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  @@index([orgId])
+}
+
+model Approval {
+  id           String         @id @default(cuid())
+  orgId        String
+  org          Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  agentId      String?
+  taskId       String?
+  action       String
+  reason       String
+  amount       String?
+  destination  String?
+  consequences String
+  payload      Json?
+  status       ApprovalStatus @default(PENDING)
+  expiresAt    DateTime
+  decidedById  String?
+  decidedAt    DateTime?
+  decisionNote String?
+  createdAt    DateTime       @default(now())
+
+  @@index([orgId, status])
+}
+
+model ServiceListing {
+  id            String         @id @default(cuid())
+  orgId         String
+  org           Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  agentId       String?
+  agent         Agent?         @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  title         String
+  category      String
+  description   String
+  priceUnits    String
+  inputFormat   String
+  outputFormat  String
+  deliveryHours Int
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  quotes        ServiceQuote[]
+  orders        ServiceOrder[]
+
+  @@index([category, active])
+}
+
+model ServiceQuote {
+  id           String         @id @default(cuid())
+  listingId    String
+  listing      ServiceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerUserId  String
+  buyerOrgId   String?
+  requirements String
+  priceUnits   String
+  feeUnits     String
+  feeBps       Int
+  expiresAt    DateTime
+  status       QuoteStatus    @default(OPEN)
+  createdAt    DateTime       @default(now())
+  order        ServiceOrder?
+}
+
+model ServiceOrder {
+  id             String          @id @default(cuid())
+  quoteId        String          @unique
+  quote          ServiceQuote    @relation(fields: [quoteId], references: [id])
+  listingId      String
+  listing        ServiceListing  @relation(fields: [listingId], references: [id])
+  buyerUserId    String
+  buyerAddress   String
+  buyerOrgId     String?
+  buyerOrg       Organization?   @relation("BuyerOrders", fields: [buyerOrgId], references: [id])
+  sellerOrgId    String
+  sellerOrg      Organization    @relation("SellerOrders", fields: [sellerOrgId], references: [id])
+  sellerAddress  String
+  amountUnits    String
+  feeUnits       String
+  requirements   String
+  status         OrderStatus     @default(AWAITING_FUNDING)
+  chainId        Int
+  escrowAddress  String?
+  escrowOrderId  String          @unique
+  fundTxHash     String?         @unique
+  releaseTxHash  String?         @unique
+  deadline       DateTime
+  isTest         Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deliverables   Deliverable[]
+  dispute        Dispute?
+  receipt        PaymentReceipt?
+  review         CustomerReview?
+
+  @@index([buyerUserId])
+  @@index([sellerOrgId])
+}
+
+model Dispute {
+  id         String       @id @default(cuid())
+  orderId    String       @unique
+  order      ServiceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  openedBy   String
+  reason     String
+  status     String       @default("OPEN")
+  resolution String?
+  createdAt  DateTime     @default(now())
+}
+
+model PaymentReceipt {
+  id          String       @id @default(cuid())
+  orderId     String       @unique
+  order       ServiceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  chainId     Int
+  txHash      String       @unique
+  blockNumber String
+  amountUnits String
+  feeUnits    String
+  payer       String
+  payee       String
+  createdAt   DateTime     @default(now())
+}
+
+model CustomerReview {
+  id           String       @id @default(cuid())
+  orderId      String       @unique
+  order        ServiceOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  reviewerId   String
+  rating       Int
+  comment      String
+  verified     Boolean
+  createdAt    DateTime     @default(now())
+}
+
+model TreasuryTransaction {
+  id           String       @id @default(cuid())
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  chainId      Int
+  txHash       String
+  logIndex     Int
+  direction    String
+  kind         String
+  token        String
+  amountUnits  String
+  counterparty String
+  orderId      String?
+  createdAt    DateTime     @default(now())
+
+  @@unique([chainId, txHash, logIndex])
+  @@index([orgId, createdAt])
+}
+
+model KnowledgeDocument {
+  id        String       @id @default(cuid())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  sizeBytes Int
+  createdAt DateTime     @default(now())
+
+  @@index([orgId])
+}
+
+model ActivityEvent {
+  id        Int          @id @default(autoincrement())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  type      String
+  summary   String
+  data      Json?
+  createdAt DateTime     @default(now())
+
+  @@index([orgId, id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  orgId     String?
+  actorType String
+  actorId   String
+  action    String
+  target    String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([orgId, createdAt])
+}
+
+model ApiKey {
+  id        String       @id @default(cuid())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name      String
+  prefix    String
+  hash      String       @unique
+  scopes    String[]
+  createdAt DateTime     @default(now())
+  revokedAt DateTime?
+}
+
+model WebhookSubscription {
+  id         String       @id @default(cuid())
+  orgId      String
+  org        Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  url        String
+  events     String[]
+  secretHash String
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+}
