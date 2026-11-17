@@ -34,7 +34,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 ) {
   const blobX = useSpring(useMotionValue(-100), { stiffness: 300, damping: 30 });
   const blobY = useSpring(useMotionValue(-100), { stiffness: 300, damping: 30 });
-  const sizes = { sm: "h-8 px-3 text-[13px] rounded-lg", md: "h-10 px-4 text-sm rounded-xl", lg: "h-12 px-6 text-[15px] rounded-2xl" };
+  const sizes = { sm: "h-9 sm:h-8 px-3 text-[13px] rounded-lg", md: "h-11 sm:h-10 px-4 text-sm rounded-xl", lg: "h-12 px-6 text-[15px] rounded-2xl" };
   const cls = `group relative inline-flex select-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50 ${sizes[size]} ${variants[variant]} ${className}`;
   const inner = (
     <>
@@ -74,14 +74,14 @@ const fieldCls =
   "w-full rounded-xl border border-line bg-black/30 px-3.5 py-2.5 text-sm text-frost placeholder:text-dim outline-none transition focus:border-lime/60 focus:bg-black/40 focus:shadow-[0_0_0_4px_rgba(182,218,52,0.12)]";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className = "", ...p }, ref) {
-  return <input ref={ref} className={`${fieldCls} h-10 ${className}`} {...p} />;
+  return <input ref={ref} className={`${fieldCls} h-11 sm:h-10 ${className}`} {...p} />;
 });
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea({ className = "", ...p }, ref) {
   return <textarea ref={ref} className={`${fieldCls} min-h-28 resize-y leading-relaxed ${className}`} {...p} />;
 });
 export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSelectElement>>(function Select({ className = "", children, ...p }, ref) {
   return (
-    <select ref={ref} className={`${fieldCls} h-10 appearance-none ${className}`} {...p}>
+    <select ref={ref} className={`${fieldCls} h-11 sm:h-10 appearance-none ${className}`} {...p}>
       {children}
     </select>
   );
@@ -224,7 +224,7 @@ export function SectionTitle({ eyebrow, title, body, action }: { eyebrow?: strin
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
         {eyebrow && <p className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-lime">{eyebrow}</p>}
-        <h1 className="font-display text-2xl font-semibold tracking-tight md:text-[28px]">{title}</h1>
+        <h1 className="font-display text-[22px] font-semibold leading-tight tracking-tight sm:text-2xl md:text-[28px]">{title}</h1>
         {body && <p className="mt-1.5 max-w-2xl text-sm text-mist">{body}</p>}
       </div>
       {action}

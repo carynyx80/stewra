@@ -8,6 +8,7 @@ export const Glass = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> &
   function Glass({ className = "", onPointerMove, children, ...rest }, ref) {
     const handle = useCallback(
       (e: PointerEvent<HTMLDivElement>) => {
+        if (e.pointerType !== "mouse") return onPointerMove?.(e);
         const el = e.currentTarget;
         const r = el.getBoundingClientRect();
         el.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -36,6 +37,7 @@ export function TiltCard({ children, className = "" }: { children: React.ReactNo
       ref={ref}
       style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}
       onPointerMove={(e) => {
+        if (e.pointerType !== "mouse") return; // no tilt on touch screens
         const r = ref.current!.getBoundingClientRect();
         x.set((e.clientX - r.left) / r.width - 0.5);
         y.set((e.clientY - r.top) / r.height - 0.5);

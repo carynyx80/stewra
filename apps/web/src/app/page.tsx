@@ -31,35 +31,35 @@ export default function Home() {
   return (
     <PublicShell intensity={1}>
       {/* HERO */}
-      <section className="relative mx-auto max-w-6xl px-4 pb-16 pt-20 md:px-6 md:pt-28">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-7 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.03] px-3 py-1.5 text-xs text-mist backdrop-blur">
+      <section className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 md:px-6 md:pt-28">
+        <div className="fade-up mb-7 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.03] px-3 py-1.5 text-xs text-mist backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-lime shadow-[0_0_10px_#b6da34]" />
           Autonomous business protocol · Robinhood Chain testnet
-        </motion.div>
+        </div>
         <LiquidHeadline
           text="Create a business. Deploy intelligence. Let it operate."
           highlight="intelligence"
-          className="max-w-4xl font-display text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.035em] md:text-[4.6rem]"
+          className="max-w-4xl font-display text-[2.4rem] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[3.2rem] md:text-[4.6rem]"
         />
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 1 }} className="mt-6 max-w-2xl text-base text-mist md:text-lg">
+        <p className="fade-up mt-6 max-w-2xl text-base text-mist md:text-lg" style={{ animationDelay: "0.45s" }}>
           Stewra gives every business an AI workforce with real roles, budgets and permissions. It sells services to other businesses and settles every payment through escrow onchain, while you keep the final say.
-        </motion.p>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9, duration: 0.8 }} className="mt-9 flex flex-wrap items-center gap-3">
-          <Magnetic>
-            <Button size="lg" href="/app/new">
+        </p>
+        <div className="fade-up mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center" style={{ animationDelay: "0.6s" }}>
+          <Magnetic className="w-full sm:w-auto">
+            <Button size="lg" href="/app/new" className="w-full sm:w-auto">
               Create a business <ArrowRight className="h-4 w-4" />
             </Button>
           </Magnetic>
-          <Magnetic>
-            <Button size="lg" variant="secondary" href="/marketplace">
-              Explore the marketplace
+          <Magnetic className="w-full sm:w-auto">
+            <Button size="lg" variant="secondary" href="/how-it-works" className="w-full sm:w-auto">
+              See how it works
             </Button>
           </Magnetic>
-        </motion.div>
+        </div>
 
-        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.1, duration: 1.2, ease: [0.22, 1, 0.36, 1] }} className="mt-16">
+        <div className="fade-up mt-14 md:mt-16" style={{ animationDelay: "0.8s" }}>
           <OrgDiagram />
-        </motion.div>
+        </div>
       </section>
 
       {/* ROLE MARQUEE */}
@@ -204,7 +204,24 @@ function OrgDiagram() {
         <span className="font-mono uppercase tracking-[0.16em]">How a workforce runs</span>
         <span>Illustration</span>
       </div>
-      <div className="relative h-[300px] md:h-[360px]">
+      <div className="relative p-4 md:hidden">
+        <div className="mx-auto w-fit rounded-2xl border border-lime/40 bg-lime/10 px-4 py-2.5 text-center">
+          <p className="font-display text-[13px] font-semibold text-lime">CEO Agent</p>
+          <p className="text-[11px] text-dim">plans & delegates</p>
+        </div>
+        <div className="mx-auto h-5 w-px bg-gradient-to-b from-lime/70 to-line-strong" />
+        <div className="grid grid-cols-2 gap-2">
+          {nodes.slice(1).map((n, i) => (
+            <div key={n.label} className="relative rounded-2xl border border-line-strong bg-void/70 px-3 py-2.5 text-center">
+              <span className="absolute -top-px left-1/2 h-px w-8 -translate-x-1/2 bg-lime/70" style={{ animation: `pulse-line 2.4s ease-in-out ${i * 0.3}s infinite` }} />
+              <p className="font-display text-[13px] font-semibold">{n.label}</p>
+              <p className="text-[11px] text-dim">{n.sub}</p>
+            </div>
+          ))}
+        </div>
+        <style>{`@keyframes pulse-line { 0%,100% { opacity: .2 } 50% { opacity: 1 } }`}</style>
+      </div>
+      <div className="relative hidden h-[360px] md:block">
         <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
           <defs>
             <linearGradient id="flow" x1="0" x2="0" y1="0" y2="1">

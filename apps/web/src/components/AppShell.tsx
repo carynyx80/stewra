@@ -78,14 +78,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line bg-void/60 px-4 py-3 backdrop-blur-xl md:px-8">
-          <button className="lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line bg-void/70 px-3 py-2.5 backdrop-blur-xl sm:px-4 md:px-8">
+          <button className="-ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
             <Menu className="h-5 w-5" />
           </button>
           <EnvBadges />
           <ConnectButton />
         </header>
-        <main className="mx-auto max-w-6xl px-4 py-8 md:px-8">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 py-6 pb-[max(2rem,env(safe-area-inset-bottom))] sm:py-8 md:px-8">{children}</main>
       </div>
     </div>
   );
@@ -164,7 +164,7 @@ function Sidebar({ onNavigate }: { onNavigate: () => void }) {
             const href = `/app/${orgId}${seg ? `/${seg}` : ""}`;
             const active = seg ? path.startsWith(href) : path === href;
             return (
-              <Link key={seg} href={href} onClick={onNavigate} className="relative mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-mist transition hover:text-frost">
+              <Link key={seg} href={href} onClick={onNavigate} className="relative mb-0.5 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[14px] text-mist transition hover:text-frost lg:py-2 lg:text-[13px]">
                 {active && <motion.span layoutId="side-pill" className="absolute inset-0 rounded-lg border border-line bg-white/[0.06]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                 <Icon className={`relative h-4 w-4 ${active ? "text-lime" : ""}`} />
                 <span className="relative">{label}</span>

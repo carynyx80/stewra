@@ -40,7 +40,7 @@ export default function MarketplacePage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-dim" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search services" className="pl-9" />
           </div>
-          <div className="scrollbar-thin -mx-4 flex gap-1.5 overflow-x-auto px-4 md:mx-0 md:px-0">
+          <div className="scroller -mx-4 flex gap-1.5 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0">
             {["", ...(meta.data?.categories ?? [])].map((c) => (
               <button
                 key={c || "all"}

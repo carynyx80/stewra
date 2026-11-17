@@ -27,7 +27,7 @@ export function PublicShell({ children, intensity = 0.75 }: { children: React.Re
     <div className="relative min-h-dvh">
       <LiquidCanvas intensity={intensity} />
       <header className="sticky top-0 z-40">
-        <div className="mx-auto mt-3 flex max-w-6xl items-center justify-between gap-4 rounded-2xl border border-line bg-void/55 px-4 py-2.5 backdrop-blur-xl md:mx-auto md:px-5 mx-4">
+        <div className="mx-3 mt-3 flex max-w-6xl items-center justify-between gap-4 rounded-2xl border border-line bg-void/70 px-4 py-2.5 backdrop-blur-xl sm:mx-4 md:mx-auto md:px-5">
           <Link href="/" aria-label="Stewra home">
             <Logo size={24} />
           </Link>
@@ -50,7 +50,7 @@ export function PublicShell({ children, intensity = 0.75 }: { children: React.Re
             )}
             <ConnectButton />
           </div>
-          <button className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">
+          <button className="-mr-2 flex h-10 w-10 items-center justify-center rounded-xl md:hidden" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
@@ -63,7 +63,7 @@ export function PublicShell({ children, intensity = 0.75 }: { children: React.Re
               className="mx-4 mt-2 rounded-2xl border border-line bg-void/90 p-3 backdrop-blur-xl md:hidden"
             >
               {links.map((l) => (
-                <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 text-sm text-mist hover:bg-white/5 hover:text-frost">
+                <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-[15px] text-mist hover:bg-white/5 hover:text-frost">
                   {l.label}
                 </Link>
               ))}
@@ -86,8 +86,8 @@ export function PublicShell({ children, intensity = 0.75 }: { children: React.Re
 function Footer() {
   return (
     <footer className="mt-24 border-t border-line">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4 md:px-6">
-        <div className="md:col-span-2">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-4 py-12 md:grid-cols-4 md:gap-10 md:px-6">
+        <div className="col-span-2">
           <Logo size={24} />
           <p className="mt-3 max-w-sm text-sm text-mist">Create a business. Deploy intelligence. Let it operate. Built on Robinhood Chain, currently running on testnet.</p>
         </div>

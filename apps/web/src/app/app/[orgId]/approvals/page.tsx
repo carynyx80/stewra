@@ -96,7 +96,7 @@ function ApprovalCard({ a, orgId, decimals, symbol }: { a: Approval; orgId: stri
       {pending && (
         <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4 md:flex-row md:items-center">
           <Input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional note" className="md:flex-1" maxLength={2000} />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button size="sm" loading={decide.isPending && decide.variables === "APPROVED"} onClick={() => decide.mutate("APPROVED")}>
               Approve
             </Button>

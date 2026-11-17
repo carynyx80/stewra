@@ -11,8 +11,9 @@ import { useEffect, useRef } from "react";
 
 const VERT = `attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }`;
 
-const FRAG = `
-precision highp float;
+const FRAG = (octaves: number) => `
+precision mediump float;
+#define OCTAVES ${octaves}
 uniform vec2 uRes;
 uniform float uTime;
 uniform vec2 uMouse;
@@ -29,7 +30,7 @@ float noise(vec2 p){
 float fbm(vec2 p){
   float v = 0., a = .5;
   mat2 r = mat2(.8,.6,-.6,.8);
-  for(int i=0;i<5;i++){ v += a*noise(p); p = r*p*2.02; a *= .5; }
+  for(int i=0;i<OCTAVES;i++){ v += a*noise(p); p = r*p*2.02; a *= .5; }
   return v;
 }
 
@@ -87,6 +88,11 @@ export function LiquidCanvas({ intensity = 1, className = "" }: { intensity?: nu
     const gl = canvas.getContext("webgl", { antialias: false, premultipliedAlpha: false, powerPreference: "low-power" });
     if (!gl) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // phones and low-power devices: fewer noise octaves, lower resolution, 30 fps
+    const lowPower = window.matchMedia("(pointer: coarse)").matches || (navigator.hardwareConcurrency ?? 8) <= 4;
+    const renderScale = lowPower ? 0.38 : 0.6;
+    const frameInterval = lowPower ? 1000 / 30 : 0;
+    let lastFrame = 0;
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!;
@@ -97,7 +103,7 @@ export function LiquidCanvas({ intensity = 1, className = "" }: { intensity?: nu
     };
     const prog = gl.createProgram()!;
     gl.attachShader(prog, compile(gl.VERTEX_SHADER, VERT));
-    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FRAG(lowPower ? 3 : 5)));
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
     gl.useProgram(prog);
@@ -124,8 +130,8 @@ export function LiquidCanvas({ intensity = 1, className = "" }: { intensity?: nu
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      canvas.width = Math.floor(canvas.clientWidth * dpr * 0.6);
-      canvas.height = Math.floor(canvas.clientHeight * dpr * 0.6);
+      canvas.width = Math.floor(canvas.clientWidth * dpr * renderScale);
+      canvas.height = Math.floor(canvas.clientHeight * dpr * renderScale);
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     const onMove = (e: PointerEvent) => {
@@ -144,6 +150,9 @@ export function LiquidCanvas({ intensity = 1, className = "" }: { intensity?: nu
     const frame = () => {
       raf = requestAnimationFrame(frame);
       if (!visible) return;
+      const now = performance.now();
+      if (frameInterval && now - lastFrame < frameInterval) return;
+      lastFrame = now;
       mouse.x += (mouse.tx - mouse.x) * 0.06;
       mouse.y += (mouse.ty - mouse.y) * 0.06;
       gl.uniform2f(uRes, canvas.width, canvas.height);
