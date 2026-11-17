@@ -188,7 +188,7 @@ function Faucet({ token, onDone }: { token: `0x${string}`; onDone: () => void })
   return (
     <Glass className="p-5">
       <p className="mb-1 flex items-center gap-2 font-display font-semibold">
-        <Droplets className="h-4 w-4 text-lime" /> Testnet faucet
+        <Droplets className="h-4 w-4 text-lime" /> Test token faucet
       </p>
       <p className="mb-4 text-xs text-dim">Mint 1,000 test tUSD to your connected wallet (once per hour). Test tokens have no value.</p>
       <Button variant="secondary" disabled={!isConnected} loading={isPending || receipt.isLoading} onClick={() => writeContract({ address: token, abi: erc20Abi, functionName: "faucet" })}>

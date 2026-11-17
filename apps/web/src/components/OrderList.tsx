@@ -22,7 +22,7 @@ export function OrderList({ orders, loading, error, decimals, symbol, emptyTitle
                 {o.sellerOrg?.name} · {timeAgo(o.createdAt)} · #{o.id.slice(-6)}
               </p>
             </div>
-            {o.isTest && <Badge tone="info">Testnet</Badge>}
+            {o.isTest && <Badge tone="info">Test</Badge>}
             {o.receipt && <Badge tone="lime">Receipt</Badge>}
             <span className="font-mono text-sm">
               {fromUnits(o.amountUnits, decimals)} {symbol}

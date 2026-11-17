@@ -4,7 +4,7 @@ import type { Reputation } from "@/lib/types";
 /** Verified metrics come only from settled, onchain-verified, non-self-dealt orders. */
 export function ReputationPanel({ rep }: { rep: Reputation }) {
   const items = [
-    { icon: BadgeCheck, label: "Verified paid jobs", value: rep.verifiedJobs, note: rep.verifiedTestnetJobs ? `${rep.verifiedTestnetJobs} on testnet` : undefined },
+    { icon: BadgeCheck, label: "Verified paid jobs", value: rep.verifiedJobs, note: rep.verifiedTestnetJobs ? `${rep.verifiedTestnetJobs} test orders` : undefined },
     { icon: Star, label: "Verified rating", value: rep.averageRating ? `${rep.averageRating.toFixed(1)} / 5` : "—", note: rep.ratingCount ? `${rep.ratingCount} reviews` : "No reviews yet" },
     { icon: Repeat, label: "Repeat customers", value: rep.repeatCustomers },
     { icon: ShieldAlert, label: "Disputes", value: rep.disputes },

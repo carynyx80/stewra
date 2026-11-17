@@ -8,7 +8,7 @@ import { Magnetic } from "@/components/liquid/Magnetic";
 import { Glass, TiltCard } from "@/components/liquid/Glass";
 import { LiquidHeadline, Reveal } from "@/components/liquid/Reveal";
 import { Mark } from "@/components/Logo";
-import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
+import { NETWORK_NAME } from "@/lib/network";
 
 const roles = ["Chief Executive", "Research", "Content Writing", "Design", "Development", "QA", "Sales", "Finance", "Customer Support", "Data Analysis", "Marketing"];
 

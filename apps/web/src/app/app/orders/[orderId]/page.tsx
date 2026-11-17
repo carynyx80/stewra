@@ -50,7 +50,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
         <ArrowLeft className="h-4 w-4" /> Orders
       </Link>
       <SectionTitle eyebrow={`Order #${o.id.slice(-6)}`} title={o.listing?.title ?? "Service order"} body={`From ${o.sellerOrg?.name} · placed ${fmtDate(o.createdAt)}`} action={<StatusPill status={o.status} />} />
-      {o.isTest && <div className="mb-4"><Notice tone="info">Testnet order. Settlement uses test tokens with no value.</Notice></div>}
+      {o.isTest && <div className="mb-4"><Notice tone="info">Test order. Settlement uses test tokens with no value.</Notice></div>}
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-6">
@@ -226,7 +226,7 @@ function BuyerActions({ data, total }: { data: OrderData; total: string }) {
     <div className="mt-5 space-y-3 border-t border-line pt-5">
       {o.status === "AWAITING_FUNDING" && (
         <>
-          {insufficient && <Notice tone="warn">Your wallet holds less than the total. On testnet, mint test tokens from the Treasury page faucet.</Notice>}
+          {insufficient && <Notice tone="warn">Your wallet holds less than the total. You can mint test tokens from the Treasury page faucet.</Notice>}
           <div className="flex items-center gap-2 text-xs text-mist">
             <Badge tone={needsApproval ? "warn" : "lime"}>1</Badge> Approve escrow to transfer {chain.settlementToken?.symbol}
           </div>

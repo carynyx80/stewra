@@ -32,7 +32,7 @@ import { Button, Badge } from "./ui";
 import { XLink } from "./Social";
 import { useAuth } from "@/lib/auth";
 import { useMeta, useOrgs } from "@/lib/hooks";
-import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
+import { displayChainName } from "@/lib/network";
 
 const orgNav = [
   { seg: "", label: "Command center", icon: Gauge },
@@ -98,7 +98,7 @@ function EnvBadges() {
   if (!data) return <span />;
   return (
     <div className="hidden min-w-0 flex-1 flex-wrap items-center gap-1.5 sm:flex">
-      <Badge tone={data.chain.chainId === 4663 ? "lime" : "info"}>{data.chain.name}</Badge>
+      <Badge tone="lime">{displayChainName(data.chain.name)}</Badge>
       {!data.providerConfigured && !data.mockMode && <Badge tone="warn">Agent execution not configured</Badge>}
       {data.mockMode && <Badge tone="warn">Mock mode (local dev)</Badge>}
       {!data.escrowReady && <Badge tone="warn">Escrow not deployed</Badge>}
@@ -185,7 +185,7 @@ function Sidebar({ onNavigate }: { onNavigate: () => void }) {
       <div className="border-t border-line px-5 py-4 text-[11px] text-dim">
         <div className="flex items-center justify-between gap-2">
           <span className="flex items-center gap-2">
-            <Mark size={14} /> Stewra · {IS_MAINNET ? "mainnet" : "testnet"}
+            <Mark size={14} /> Stewra
           </span>
           <XLink className="h-8 w-8" />
         </div>

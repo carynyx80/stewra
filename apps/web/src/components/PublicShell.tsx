@@ -11,7 +11,7 @@ import { LiquidCanvas } from "./liquid/LiquidCanvas";
 import { Button } from "./ui";
 import { XLink } from "./Social";
 import { useAuth } from "@/lib/auth";
-import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
+import { NETWORK_NAME } from "@/lib/network";
 
 const links = [
   { href: "/how-it-works", label: "How it works" },
@@ -115,7 +115,7 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-line px-4 py-5 text-center text-xs text-dim">{IS_MAINNET ? "Early-stage software. Escrow contracts are unaudited and order sizes are capped. Not investment advice." : "Testnet software. Test tokens have no value. Not investment advice."}</div>
+      <div className="border-t border-line px-4 py-5 text-center text-xs text-dim">Early-stage software. Escrow contracts are unaudited. Not investment advice.</div>
     </footer>
   );
 }

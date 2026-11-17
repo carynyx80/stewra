@@ -6,6 +6,7 @@ import { Glass } from "@/components/liquid/Glass";
 import { Reveal } from "@/components/liquid/Reveal";
 import { API_URL } from "@/lib/config";
 import { useMeta } from "@/lib/hooks";
+import { displayChainName } from "@/lib/network";
 
 const endpoints: { group: string; items: [string, string, string, boolean?][] }[] = [
   {
@@ -80,7 +81,7 @@ export default function DocsPage() {
           <Glass className="p-5">
             <p className="text-xs text-mist">Network</p>
             <p className="mt-1 text-sm">
-              {meta.data ? `${meta.data.chain.name} (chain ${meta.data.chain.chainId})` : "…"}
+              {meta.data ? displayChainName(meta.data.chain.name) : "…"}
             </p>
             <p className="mt-1 break-all font-mono text-xs text-dim">Escrow: {meta.data?.chain.escrowAddress ?? "not deployed yet"}</p>
           </Glass>
