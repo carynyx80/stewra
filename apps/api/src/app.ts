@@ -19,7 +19,8 @@ export async function buildApp() {
       if (!origin || corsOrigins.includes(origin) || corsOrigins.includes("*")) return cb(null, true);
       // optional pattern for this project's preview deployments, e.g. ^https://stewra-[a-z0-9-]+-carynyx1\.vercel\.app$
       if (corsOriginPattern && corsOriginPattern.test(origin)) return cb(null, true);
-      cb(new Error("Origin not allowed"), false);
+      // refuse quietly: no CORS headers, so the browser blocks the response
+      cb(null, false);
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
