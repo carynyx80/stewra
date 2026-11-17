@@ -43,3 +43,6 @@ export function XLink({ variant = "icon", className = "" }: { variant?: "icon" |
     </a>
   );
 }
+
+/** $STEWRA token contract on Robinhood Chain mainnet. */
+export const TOKEN_CA = "0xff2b70a1ebc5564ab41aeaec8a6077506c2411e6";

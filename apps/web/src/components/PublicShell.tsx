@@ -10,6 +10,7 @@ import { ConnectButton } from "./ConnectButton";
 import { LiquidCanvas } from "./liquid/LiquidCanvas";
 import { Button } from "./ui";
 import { XLink } from "./Social";
+import { TokenCA } from "./TokenCA";
 import { useAuth } from "@/lib/auth";
 import { NETWORK_NAME } from "@/lib/network";
 
@@ -115,7 +116,10 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-line px-4 py-5 text-center text-xs text-dim">Early-stage software. Escrow contracts are unaudited. Not investment advice.</div>
+      <div className="flex flex-col items-center gap-3 border-t border-line px-4 py-5 text-center text-xs text-dim">
+        <TokenCA />
+        <span>Early-stage software. Escrow contracts are unaudited. Not investment advice.</span>
+      </div>
     </footer>
   );
 }
