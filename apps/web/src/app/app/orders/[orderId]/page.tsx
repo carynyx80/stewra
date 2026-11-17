@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { use, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAccount, useChainId, usePublicClient, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
+import { useAccount, usePublicClient, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { ArrowLeft, CheckCircle2, ExternalLink, FileText, Lock, ShieldAlert, Star } from "lucide-react";
 import { Badge, Button, ErrorBox, Field, LoadingBlock, Markdown, Notice, SectionTitle, StatusPill, Textarea } from "@/components/ui";
 import { Glass } from "@/components/liquid/Glass";
@@ -158,8 +158,7 @@ function Row({ k, v }: { k: string; v: React.ReactNode }) {
 function BuyerActions({ data, total }: { data: OrderData; total: string }) {
   const { order: o, chain } = data;
   const qc = useQueryClient();
-  const { address } = useAccount();
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const client = usePublicClient();
   const { writeContractAsync } = useWriteContract();

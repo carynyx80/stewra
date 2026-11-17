@@ -80,7 +80,7 @@ export async function publicRoutes(app: FastifyInstance) {
 
   app.post("/auth/nonce", { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } }, async (req) => {
     const { address } = z.object({ address: z.string() }).parse(req.body);
-    return createNonce(address);
+    return createNonce(address, req.headers.origin);
   });
 
   app.post("/auth/verify", { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } }, async (req) => {

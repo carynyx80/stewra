@@ -95,7 +95,7 @@ function EnvBadges() {
   const { data } = useMeta();
   if (!data) return <span />;
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="hidden min-w-0 flex-1 flex-wrap items-center gap-1.5 sm:flex">
       <Badge tone={data.chain.chainId === 4663 ? "lime" : "info"}>{data.chain.name}</Badge>
       {!data.providerConfigured && !data.mockMode && <Badge tone="warn">Agent execution not configured</Badge>}
       {data.mockMode && <Badge tone="warn">Mock mode (local dev)</Badge>}
