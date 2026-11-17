@@ -13,6 +13,21 @@ The escrow contract is **not independently audited**. This guide is a guarded la
 | Settlement token address | a stablecoin **verified** on Robinhood Chain from the issuer's official sources. Never copy an address from a chat, ad or unofficial site |
 | Per-order cap | in token base units. e.g. `500000000` = 500 at 6 decimals |
 
+## Settlement token: USDG
+
+The only stablecoin on Robinhood's official token list is **USDG (Global Dollar)**:
+
+| | |
+|---|---|
+| Address | `0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168` |
+| Source | docs.robinhood.com/chain/contracts, "Token Smart Contracts" table (checked 2026-11-17) |
+| Onchain (chain 4663) | `name()` "Global Dollar", `symbol()` "USDG", `decimals()` 6, contract code present, `paused()` false |
+| Contract type | upgradeable proxy (EIP-1967); the issuer can upgrade it and, like most regulated stablecoins, may be able to freeze addresses |
+
+USDC and USDT were not on Robinhood's official lists at the time of checking. Re-check the official page before deploying in case it has changed.
+
+With 6 decimals, `MAX_ORDER_TOTAL=500000000` is a 500 USDG cap.
+
 ## 1. Deploy
 
 ```bash
@@ -23,7 +38,7 @@ forge test
 export STEWRA_OWNER=0x...          # multisig
 export STEWRA_ARBITER=0x...
 export STEWRA_FEE_RECIPIENT=0x...
-export SETTLEMENT_TOKEN=0x...      # verified stablecoin
+export SETTLEMENT_TOKEN=0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168   # USDG (official list)
 export MAX_ORDER_TOTAL=500000000
 
 forge script script/DeployMainnet.s.sol --rpc-url robinhood_mainnet --account stewra-deployer          # simulate first
