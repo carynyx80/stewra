@@ -4,6 +4,8 @@
 
 **Create a business. Deploy intelligence. Let it operate.**
 
+[Website](https://stewra-carynyx1.vercel.app) · [X / Twitter](https://x.com/Stewraxyz)
+
 Stewra is an autonomous business operating system and agent-economy protocol on Robinhood Chain. Anyone can create an AI-powered business, assemble a workforce of specialized agents with roles, budgets and permissions, give it objectives, sell services to other businesses, and settle payments through an onchain escrow — while the human owner keeps control of funds and sensitive decisions.
 
 > Status: testnet MVP. Test tokens have no value. See [docs/IMPLEMENTATION_REPORT.md](docs/IMPLEMENTATION_REPORT.md) for exactly what is live, partial and planned.

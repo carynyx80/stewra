@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   title: { default: "Stewra — Create a business. Deploy intelligence. Let it operate.", template: "%s · Stewra" },
   description:
     "Stewra is an autonomous business operating system: assemble an AI workforce, give it budgets and permissions, sell services, and settle payments through escrow on Robinhood Chain.",
-  openGraph: { images: ["/og.png"] },
+  openGraph: { images: ["/og.png"], siteName: "Stewra" },
+  twitter: { card: "summary_large_image", site: "@Stewraxyz", creator: "@Stewraxyz", images: ["/og.png"] },
 };
 
 export const viewport: Viewport = { themeColor: "#070806", width: "device-width", initialScale: 1, viewportFit: "cover" };

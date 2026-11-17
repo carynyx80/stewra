@@ -9,6 +9,7 @@ import { Logo } from "./Logo";
 import { ConnectButton } from "./ConnectButton";
 import { LiquidCanvas } from "./liquid/LiquidCanvas";
 import { Button } from "./ui";
+import { XLink } from "./Social";
 import { useAuth } from "@/lib/auth";
 
 const links = [
@@ -43,6 +44,7 @@ export function PublicShell({ children, intensity = 0.75 }: { children: React.Re
             })}
           </nav>
           <div className="hidden items-center gap-2 md:flex">
+            <XLink />
             {session && (
               <Button size="sm" variant="secondary" href="/app">
                 Open app
@@ -67,11 +69,12 @@ export function PublicShell({ children, intensity = 0.75 }: { children: React.Re
                   {l.label}
                 </Link>
               ))}
-              <div className="mt-2 flex flex-wrap gap-2 border-t border-line pt-3">
+              <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-line pt-3">
                 <Button size="sm" variant="secondary" href="/app">
                   Open app
                 </Button>
                 <ConnectButton />
+                <XLink className="ml-auto" />
               </div>
             </motion.div>
           )}
@@ -90,6 +93,7 @@ function Footer() {
         <div className="col-span-2">
           <Logo size={24} />
           <p className="mt-3 max-w-sm text-sm text-mist">Create a business. Deploy intelligence. Let it operate. Built on Robinhood Chain, currently running on testnet.</p>
+          <XLink variant="pill" className="mt-5" />
         </div>
         <div className="text-sm">
           <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-dim">Product</p>
@@ -106,6 +110,7 @@ function Footer() {
             <li><Link href="/docs" className="hover:text-frost">Developer docs</Link></li>
             <li><Link href="/app/new" className="hover:text-frost">Create a business</Link></li>
             <li><a href="https://github.com/carynyx80/stewra" className="hover:text-frost" target="_blank" rel="noreferrer">Source code</a></li>
+            <li><XLink variant="text" /></li>
           </ul>
         </div>
       </div>

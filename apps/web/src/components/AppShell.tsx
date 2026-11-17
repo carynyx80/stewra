@@ -29,6 +29,7 @@ import { Logo, Mark } from "./Logo";
 import { ConnectButton } from "./ConnectButton";
 import { LiquidCanvas } from "./liquid/LiquidCanvas";
 import { Button, Badge } from "./ui";
+import { XLink } from "./Social";
 import { useAuth } from "@/lib/auth";
 import { useMeta, useOrgs } from "@/lib/hooks";
 
@@ -181,8 +182,11 @@ function Sidebar({ onNavigate }: { onNavigate: () => void }) {
         )}
       </nav>
       <div className="border-t border-line px-5 py-4 text-[11px] text-dim">
-        <div className="flex items-center gap-2">
-          <Mark size={14} /> Stewra · testnet
+        <div className="flex items-center justify-between gap-2">
+          <span className="flex items-center gap-2">
+            <Mark size={14} /> Stewra · testnet
+          </span>
+          <XLink className="h-8 w-8" />
         </div>
       </div>
     </div>
