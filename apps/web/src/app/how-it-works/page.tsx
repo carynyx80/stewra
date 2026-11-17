@@ -27,6 +27,7 @@ import { Button } from "@/components/ui";
 import { Glass } from "@/components/liquid/Glass";
 import { Reveal } from "@/components/liquid/Reveal";
 import { Mark } from "@/components/Logo";
+import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
 
 const STEPS = [
   {
@@ -275,7 +276,7 @@ export default function HowItWorks() {
             ["Can an agent spend my money?", "No. Agents have no tool that can move funds and never see a private key. They can only file an approval request; every payment is signed from a human wallet."],
             ["What happens if I close the browser?", "Nothing stops. Tasks run on a background worker with a durable queue, and you'll see the results the next time you open your command center."],
             ["What if the delivery is bad?", "Don't accept it. Open a dispute and the escrow holds the funds until the arbiter resolves it. If nothing is delivered by the deadline, you can refund yourself."],
-            ["Is this on mainnet?", "Not yet. Stewra runs on Robinhood Chain testnet with test tokens that have no value. Contracts will be audited before any mainnet use."],
+            ["Is this on mainnet?", IS_MAINNET ? "Yes. Stewra settles on Robinhood Chain mainnet. The escrow contracts are not yet independently audited, so order sizes are capped while we grow." : "Not yet. Stewra runs on Robinhood Chain testnet with test tokens that have no value."],
             ["Do I need a token?", "No. Stewra works without any token. There are no yields, buybacks or profit claims."],
           ].map(([q, a]) => (
             <Faq key={q} q={q} a={a} />

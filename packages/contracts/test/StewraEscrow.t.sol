@@ -17,9 +17,11 @@ contract StewraEscrowTest is Test {
 
     function setUp() public {
         usd = new TestUSD();
-        escrow = new StewraEscrow(owner, arbiter, feeTo);
-        vm.prank(owner);
+        escrow = new StewraEscrow(owner, arbiter, feeTo, false);
+        vm.startPrank(owner);
         escrow.setTokenAllowed(address(usd), true);
+        escrow.setMaxOrderTotal(address(usd), type(uint256).max);
+        vm.stopPrank();
         vm.prank(buyer);
         usd.faucet();
         vm.prank(buyer);
@@ -144,6 +146,46 @@ contract StewraEscrowTest is Test {
         vm.prank(buyer);
         escrow.accept(ID);
         assertEq(usd.balanceOf(seller), 10e6);
+    }
+
+    function test_RevertWhen_OrderAboveCap() public {
+        vm.prank(owner);
+        escrow.setMaxOrderTotal(address(usd), 50e6);
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(StewraEscrow.OrderTooLarge.selector, 51e6, 50e6));
+        escrow.fund(ID, seller, address(usd), 50e6, 1e6, uint64(block.timestamp + 1 days));
+        _fund(49e6, 1e6); // exactly at the cap is allowed
+    }
+
+    function test_UncappedTokenCannotBeUsed() public {
+        vm.prank(owner);
+        escrow.setMaxOrderTotal(address(usd), 0);
+        vm.prank(buyer);
+        vm.expectRevert(abi.encodeWithSelector(StewraEscrow.OrderTooLarge.selector, 1e6, 0));
+        escrow.fund(ID, seller, address(usd), 1e6, 0, uint64(block.timestamp + 1 days));
+    }
+
+    function test_StartPausedBlocksOrdersUntilUnpaused() public {
+        StewraEscrow guarded = new StewraEscrow(owner, arbiter, feeTo, true);
+        vm.startPrank(owner);
+        guarded.setTokenAllowed(address(usd), true);
+        guarded.setMaxOrderTotal(address(usd), 100e6);
+        vm.stopPrank();
+        vm.prank(buyer);
+        usd.approve(address(guarded), type(uint256).max);
+        vm.prank(buyer);
+        vm.expectRevert();
+        guarded.fund(ID, seller, address(usd), 1e6, 0, uint64(block.timestamp + 1 days));
+        vm.prank(owner);
+        guarded.unpause();
+        vm.prank(buyer);
+        guarded.fund(ID, seller, address(usd), 1e6, 0, uint64(block.timestamp + 1 days));
+    }
+
+    function test_OnlyOwnerSetsCap() public {
+        vm.prank(buyer);
+        vm.expectRevert();
+        escrow.setMaxOrderTotal(address(usd), 1);
     }
 
     function testFuzz_ReleaseConservesFunds(uint96 amount, uint16 feeBps) public {

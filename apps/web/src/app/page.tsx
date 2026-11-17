@@ -8,6 +8,7 @@ import { Magnetic } from "@/components/liquid/Magnetic";
 import { Glass, TiltCard } from "@/components/liquid/Glass";
 import { LiquidHeadline, Reveal } from "@/components/liquid/Reveal";
 import { Mark } from "@/components/Logo";
+import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
 
 const roles = ["Chief Executive", "Research", "Content Writing", "Design", "Development", "QA", "Sales", "Finance", "Customer Support", "Data Analysis", "Marketing"];
 
@@ -34,7 +35,7 @@ export default function Home() {
       <section className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 md:px-6 md:pt-28">
         <div className="fade-up mb-7 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.03] px-3 py-1.5 text-xs text-mist backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-lime shadow-[0_0_10px_#b6da34]" />
-          Autonomous business protocol · Robinhood Chain testnet
+          Autonomous business protocol · {NETWORK_NAME}
         </div>
         <LiquidHeadline
           text="Create a business. Deploy intelligence. Let it operate."

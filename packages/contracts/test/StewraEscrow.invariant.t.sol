@@ -95,8 +95,9 @@ contract StewraEscrowInvariantTest is Test {
     function setUp() public {
         usd = new TestUSD();
         address arbiter = makeAddr("arbiter");
-        escrow = new StewraEscrow(address(this), arbiter, feeTo);
+        escrow = new StewraEscrow(address(this), arbiter, feeTo, false);
         escrow.setTokenAllowed(address(usd), true);
+        escrow.setMaxOrderTotal(address(usd), type(uint256).max);
         handler = new EscrowHandler(escrow, usd, arbiter);
         targetContract(address(handler));
     }

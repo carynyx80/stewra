@@ -11,6 +11,7 @@ import { LiquidCanvas } from "./liquid/LiquidCanvas";
 import { Button } from "./ui";
 import { XLink } from "./Social";
 import { useAuth } from "@/lib/auth";
+import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
 
 const links = [
   { href: "/how-it-works", label: "How it works" },
@@ -92,7 +93,7 @@ function Footer() {
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-4 py-12 md:grid-cols-4 md:gap-10 md:px-6">
         <div className="col-span-2">
           <Logo size={24} />
-          <p className="mt-3 max-w-sm text-sm text-mist">Create a business. Deploy intelligence. Let it operate. Built on Robinhood Chain, currently running on testnet.</p>
+          <p className="mt-3 max-w-sm text-sm text-mist">Create a business. Deploy intelligence. Let it operate. Live on {NETWORK_NAME}.</p>
           <XLink variant="pill" className="mt-5" />
         </div>
         <div className="text-sm">
@@ -114,7 +115,7 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-line py-5 text-center text-xs text-dim">Testnet software. Test tokens have no value. Not investment advice.</div>
+      <div className="border-t border-line px-4 py-5 text-center text-xs text-dim">{IS_MAINNET ? "Early-stage software. Escrow contracts are unaudited and order sizes are capped. Not investment advice." : "Testnet software. Test tokens have no value. Not investment advice."}</div>
     </footer>
   );
 }

@@ -15,8 +15,9 @@ contract Deploy is Script {
         address deployer = msg.sender;
         TestUSD usd = new TestUSD();
         BusinessRegistry registry = new BusinessRegistry();
-        StewraEscrow escrow = new StewraEscrow(deployer, deployer, deployer);
+        StewraEscrow escrow = new StewraEscrow(deployer, deployer, deployer, false);
         escrow.setTokenAllowed(address(usd), true);
+        escrow.setMaxOrderTotal(address(usd), 100_000 * 1e6); // testnet cap: 100k tUSD
         vm.stopBroadcast();
 
         console2.log("SETTLEMENT_TOKEN_ADDRESS=%s", address(usd));

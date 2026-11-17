@@ -56,7 +56,7 @@ forge script script/Deploy.s.sol --rpc-url robinhood_testnet --broadcast --accou
 
 The script prints `SETTLEMENT_TOKEN_ADDRESS`, `BUSINESS_REGISTRY_ADDRESS` and `ESCROW_ADDRESS`. Add them to the Railway API variables and redeploy. The deployer becomes escrow owner, arbiter and fee recipient; change these with `setArbiter` / `setFeeRecipient` / `transferOwnership` (two-step).
 
-The token contract refuses to deploy on mainnet (chain 4663). Do not deploy the escrow to mainnet before an independent audit.
+The token contract refuses to deploy on mainnet (chain 4663). For mainnet, follow [MAINNET.md](MAINNET.md): a guarded launch with per-order caps, a paused start and multisig ownership.
 
 ## 4. Smoke test
 

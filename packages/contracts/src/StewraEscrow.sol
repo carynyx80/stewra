@@ -45,6 +45,8 @@ contract StewraEscrow is ReentrancyGuard, Ownable2Step, Pausable {
     address public arbiter;
     address public feeRecipient;
     mapping(address => bool) public allowedTokens;
+    /// @notice Launch guardrail: largest `amount + fee` a single order may hold, per token. 0 = token cannot be used.
+    mapping(address => uint256) public maxOrderTotal;
     mapping(bytes32 => Order) public orders;
     /// @dev total funds held per token, for invariant checking and transparency
     mapping(address => uint256) public totalHeld;
@@ -60,6 +62,7 @@ contract StewraEscrow is ReentrancyGuard, Ownable2Step, Pausable {
     event TokenAllowed(address indexed token, bool allowed);
     event ArbiterChanged(address indexed arbiter);
     event FeeRecipientChanged(address indexed feeRecipient);
+    event MaxOrderTotalChanged(address indexed token, uint256 maxTotal);
 
     error OrderExists();
     error InvalidOrder();
@@ -73,11 +76,14 @@ contract StewraEscrow is ReentrancyGuard, Ownable2Step, Pausable {
     error NotArbiter();
     error TooEarly();
     error ZeroAddress();
+    error OrderTooLarge(uint256 total, uint256 maxTotal);
 
-    constructor(address owner_, address arbiter_, address feeRecipient_) Ownable(owner_) {
+    /// @param startPaused deploy with new orders disabled (recommended for mainnet)
+    constructor(address owner_, address arbiter_, address feeRecipient_, bool startPaused) Ownable(owner_) {
         if (arbiter_ == address(0) || feeRecipient_ == address(0)) revert ZeroAddress();
         arbiter = arbiter_;
         feeRecipient = feeRecipient_;
+        if (startPaused) _pause();
     }
 
     /* ------------------------------------------------------------------ admin */
@@ -86,6 +92,12 @@ contract StewraEscrow is ReentrancyGuard, Ownable2Step, Pausable {
         if (token == address(0)) revert ZeroAddress();
         allowedTokens[token] = allowed;
         emit TokenAllowed(token, allowed);
+    }
+
+    /// @notice Cap on `amount + fee` per order for a token. Raise gradually as confidence grows.
+    function setMaxOrderTotal(address token, uint256 maxTotal) external onlyOwner {
+        maxOrderTotal[token] = maxTotal;
+        emit MaxOrderTotalChanged(token, maxTotal);
     }
 
     function setArbiter(address arbiter_) external onlyOwner {
@@ -122,6 +134,7 @@ contract StewraEscrow is ReentrancyGuard, Ownable2Step, Pausable {
         if (!allowedTokens[token]) revert TokenNotAllowed();
         if (fee * 10_000 > amount * MAX_FEE_BPS) revert FeeTooHigh();
         if (deadline <= block.timestamp) revert BadDeadline();
+        if (amount + fee > maxOrderTotal[token]) revert OrderTooLarge(amount + fee, maxOrderTotal[token]);
 
         orders[orderId] = Order({
             buyer: msg.sender,

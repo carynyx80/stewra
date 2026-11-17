@@ -32,6 +32,7 @@ import { Button, Badge } from "./ui";
 import { XLink } from "./Social";
 import { useAuth } from "@/lib/auth";
 import { useMeta, useOrgs } from "@/lib/hooks";
+import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
 
 const orgNav = [
   { seg: "", label: "Command center", icon: Gauge },
@@ -184,7 +185,7 @@ function Sidebar({ onNavigate }: { onNavigate: () => void }) {
       <div className="border-t border-line px-5 py-4 text-[11px] text-dim">
         <div className="flex items-center justify-between gap-2">
           <span className="flex items-center gap-2">
-            <Mark size={14} /> Stewra · testnet
+            <Mark size={14} /> Stewra · {IS_MAINNET ? "mainnet" : "testnet"}
           </span>
           <XLink className="h-8 w-8" />
         </div>

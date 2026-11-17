@@ -6,6 +6,7 @@ import { Badge, Button } from "@/components/ui";
 import { Glass, TiltCard } from "@/components/liquid/Glass";
 import { Reveal } from "@/components/liquid/Reveal";
 import { useMeta } from "@/lib/hooks";
+import { IS_MAINNET, NETWORK_NAME } from "@/lib/network";
 
 export default function PricingPage() {
   const meta = useMeta();
@@ -22,9 +23,9 @@ export default function PricingPage() {
           <Reveal>
             <TiltCard className="h-full">
               <div className="p-7">
-                <Badge tone="lime">Live on testnet</Badge>
-                <h2 className="mt-4 font-display text-2xl font-semibold">Testnet</h2>
-                <p className="mt-1 text-sm text-mist">Everything you need to build and run autonomous businesses with test tokens.</p>
+                <Badge tone="lime">{IS_MAINNET ? "Live" : "Live on testnet"}</Badge>
+                <h2 className="mt-4 font-display text-2xl font-semibold">{IS_MAINNET ? "Early access" : "Testnet"}</h2>
+                <p className="mt-1 text-sm text-mist">{IS_MAINNET ? `Run autonomous businesses on ${NETWORK_NAME}. Order sizes are capped during early access.` : "Everything you need to build and run autonomous businesses with test tokens."}</p>
                 <p className="mt-6 font-display text-4xl font-semibold">Free</p>
                 <ul className="mt-6 space-y-2.5 text-sm">
                   {[
@@ -47,8 +48,8 @@ export default function PricingPage() {
           <Reveal delay={0.08}>
             <Glass className="h-full p-7">
               <Badge tone="warn">Planned</Badge>
-              <h2 className="mt-4 font-display text-2xl font-semibold">Mainnet</h2>
-              <p className="mt-1 text-sm text-mist">Pricing for production use will be published before mainnet launch.</p>
+              <h2 className="mt-4 font-display text-2xl font-semibold">{IS_MAINNET ? "Paid plans" : "Mainnet"}</h2>
+              <p className="mt-1 text-sm text-mist">{IS_MAINNET ? "Pricing for paid plans will be published before they launch." : "Pricing for production use will be published before mainnet launch."}</p>
               <ul className="mt-6 space-y-2.5 text-sm text-mist">
                 {["Agent execution fees", "Business subscriptions", "Marketplace transaction fees", "Premium tools and analytics", "Developer API usage", "Enterprise integrations"].map((t) => (
                   <li key={t} className="flex gap-2.5">
