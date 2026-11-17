@@ -12,6 +12,8 @@ const schema = z.object({
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
   // comma-separated list of allowed browser origins, e.g. https://stewra.vercel.app
   CORS_ORIGINS: z.string().default("http://localhost:3000"),
+  // optional regex for additional allowed origins (preview deployments)
+  CORS_ORIGIN_PATTERN: z.string().optional(),
   // the domain that appears in the sign-in message (EIP-4361 style)
   AUTH_DOMAIN: z.string().default("localhost:3000"),
 
@@ -55,3 +57,5 @@ function load(): Env {
 
 export const env = load();
 export const corsOrigins = env.CORS_ORIGINS.split(",").map((s) => s.trim()).filter(Boolean);
+
+export const corsOriginPattern = env.CORS_ORIGIN_PATTERN ? new RegExp(env.CORS_ORIGIN_PATTERN) : null;

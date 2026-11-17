@@ -3,7 +3,7 @@ import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
-import { corsOrigins } from "./env.js";
+import { corsOriginPattern, corsOrigins } from "./env.js";
 import { HttpError } from "./errors.js";
 import { publicRoutes } from "./routes/public.js";
 import { orgRoutes } from "./routes/orgs.js";
@@ -17,8 +17,8 @@ export async function buildApp() {
     origin: (origin, cb) => {
       // non-browser clients send no Origin header
       if (!origin || corsOrigins.includes(origin) || corsOrigins.includes("*")) return cb(null, true);
-      // allow Vercel preview deployments of the configured project
-      if (corsOrigins.some((o) => o.endsWith(".vercel.app")) && /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) return cb(null, true);
+      // optional pattern for this project's preview deployments, e.g. ^https://stewra-[a-z0-9-]+-carynyx1\.vercel\.app$
+      if (corsOriginPattern && corsOriginPattern.test(origin)) return cb(null, true);
       cb(new Error("Origin not allowed"), false);
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
